@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI 任务流管理系统</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Arial, "Microsoft YaHei", sans-serif;
+        color: #172033;
+        background: #f4f7fb;
+      }
+
+      .page {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 32px 18px;
+      }
+
+      .home {
+        width: min(920px, 100%);
+        background: #ffffff;
+        border: 1px solid #dce3ee;
+        border-radius: 8px;
+        padding: 42px;
+        box-shadow: 0 18px 60px rgba(23, 32, 51, 0.1);
+      }
+
+      .label {
+        margin: 0 0 12px;
+        color: #2563eb;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 44px;
+        line-height: 1.15;
+        letter-spacing: 0;
+      }
+
+      .intro {
+        max-width: 640px;
+        margin: 18px 0 30px;
+        color: #667085;
+        font-size: 18px;
+        line-height: 1.7;
+      }
+
+      .features {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-bottom: 32px;
+      }
+
+      .feature {
+        border: 1px solid #dce3ee;
+        border-radius: 8px;
+        padding: 18px;
+        background: #fbfcff;
+      }
+
+      .feature h2 {
+        margin: 0 0 8px;
+        font-size: 18px;
+      }
+
+      .feature p {
+        margin: 0;
+        color: #667085;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 46px;
+        padding: 0 20px;
+        border-radius: 8px;
+        background: #2563eb;
+        color: #ffffff;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      @media (max-width: 720px) {
+        .home {
+          padding: 30px 22px;
+        }
+
+        h1 {
+          font-size: 34px;
+        }
+
+        .features {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="home" aria-labelledby="product-title">
+        <p class="label">学习项目原型</p>
+        <h1 id="product-title">AI 任务流管理系统</h1>
+        <p class="intro">
+          用 AI 帮你整理任务、规划优先级，并把每天要做的事情变成清晰可执行的流程。
+        </p>
+
+        <div class="features" aria-label="核心功能">
+          <article class="feature">
+            <h2>智能拆解任务</h2>
+            <p>把一个大目标拆成更容易执行的小步骤。</p>
+          </article>
+          <article class="feature">
+            <h2>自动排序优先级</h2>
+            <p>根据重要程度和截止时间，提醒你先做什么。</p>
+          </article>
+          <article class="feature">
+            <h2>跟踪完成进度</h2>
+            <p>记录已完成、进行中和待处理的任务状态。</p>
+          </article>
+        </div>
+
+        <a class="button" href="#">进入任务列表</a>
+      </section>
+    </main>
+  </body>
+</html>
