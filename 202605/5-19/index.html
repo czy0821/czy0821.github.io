@@ -1,0 +1,659 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI 任务流管理系统 - 任务列表页原型</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --blue: #2563eb;
+      --green: #16a34a;
+      --orange: #ea580c;
+      --red: #dc2626;
+      --slate: #475569;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+    }
+
+    .sidebar {
+      background: #111827;
+      color: #f9fafb;
+      padding: 22px 18px;
+    }
+
+    .brand {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 28px;
+    }
+
+    .nav {
+      display: grid;
+      gap: 8px;
+    }
+
+    .nav button {
+      width: 100%;
+      border: 0;
+      color: #d1d5db;
+      background: transparent;
+      padding: 10px 12px;
+      border-radius: 6px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .nav button.active,
+    .nav button:hover {
+      color: #ffffff;
+      background: #374151;
+    }
+
+    main {
+      padding: 24px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .subtitle {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .primary {
+      border: 0;
+      background: var(--blue);
+      color: #fff;
+      border-radius: 6px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .metric,
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .metric {
+      padding: 16px;
+    }
+
+    .metric .label {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .metric .value {
+      margin-top: 8px;
+      font-size: 26px;
+      font-weight: 700;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    input,
+    select {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 9px 10px;
+      min-height: 38px;
+      background: #fff;
+    }
+
+    input {
+      min-width: 260px;
+      flex: 1;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 14px;
+      align-items: start;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th,
+    td {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      font-size: 14px;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f9fafb;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    tr {
+      cursor: pointer;
+    }
+
+    tr:hover td {
+      background: #f8fafc;
+    }
+
+    .task-title {
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .task-desc {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 4px 9px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .status-running {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .status-review {
+      background: #ffedd5;
+      color: #c2410c;
+    }
+
+    .status-done {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .status-error {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .priority-high {
+      color: var(--red);
+      font-weight: 700;
+    }
+
+    .priority-medium {
+      color: var(--orange);
+      font-weight: 700;
+    }
+
+    .priority-low {
+      color: var(--slate);
+      font-weight: 700;
+    }
+
+    .detail {
+      padding: 16px;
+      position: sticky;
+      top: 16px;
+    }
+
+    .detail h2 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+
+    .detail-section {
+      border-top: 1px solid var(--line);
+      padding-top: 14px;
+      margin-top: 14px;
+    }
+
+    .detail-label {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    .steps {
+      display: grid;
+      gap: 8px;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+
+    .steps li {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      background: #f9fafb;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 9px;
+      font-size: 13px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .row-actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .secondary,
+    .text-button {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .secondary {
+      padding: 9px 10px;
+    }
+
+    .text-button {
+      padding: 6px 8px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .text-button:hover,
+    .secondary:hover {
+      border-color: #cbd5e1;
+      background: #f8fafc;
+    }
+
+    .empty {
+      padding: 26px;
+      text-align: center;
+      color: var(--muted);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: none;
+    }
+
+    @media (max-width: 900px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .summary,
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .detail {
+        position: static;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">AI Flow</div>
+      <nav class="nav" aria-label="主导航">
+        <button class="active">任务列表</button>
+        <button>智能体</button>
+        <button>知识库</button>
+        <button>运行日志</button>
+        <button>设置</button>
+      </nav>
+    </aside>
+
+    <main>
+      <div class="topbar">
+        <div>
+          <h1>任务列表</h1>
+          <div class="subtitle">管理 AI 任务的执行状态、负责人、优先级和下一步动作</div>
+        </div>
+        <button class="primary" id="createTask">新建任务</button>
+      </div>
+
+      <section class="summary" aria-label="任务概览">
+        <div class="metric">
+          <div class="label">进行中</div>
+          <div class="value" id="runningCount">0</div>
+        </div>
+        <div class="metric">
+          <div class="label">待人工确认</div>
+          <div class="value" id="reviewCount">0</div>
+        </div>
+        <div class="metric">
+          <div class="label">今日完成</div>
+          <div class="value" id="doneCount">0</div>
+        </div>
+        <div class="metric">
+          <div class="label">异常任务</div>
+          <div class="value" id="errorCount">0</div>
+        </div>
+      </section>
+
+      <section class="panel toolbar" aria-label="筛选工具栏">
+        <input id="searchInput" type="search" placeholder="搜索任务名称、负责人或智能体">
+        <select id="statusFilter" aria-label="状态筛选">
+          <option value="all">全部状态</option>
+          <option value="running">进行中</option>
+          <option value="review">待确认</option>
+          <option value="done">已完成</option>
+          <option value="error">异常</option>
+        </select>
+        <select id="priorityFilter" aria-label="优先级筛选">
+          <option value="all">全部优先级</option>
+          <option value="high">高优先级</option>
+          <option value="medium">中优先级</option>
+          <option value="low">低优先级</option>
+        </select>
+      </section>
+
+      <div class="layout">
+        <section>
+          <table aria-label="AI 任务列表">
+            <thead>
+              <tr>
+                <th>任务</th>
+                <th>状态</th>
+                <th>优先级</th>
+                <th>负责人</th>
+                <th>智能体</th>
+                <th>创建时间</th>
+                <th>更新时间</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="taskBody"></tbody>
+          </table>
+          <div class="empty" id="emptyState">没有找到匹配的任务</div>
+        </section>
+
+        <aside class="panel detail" aria-label="任务详情">
+          <h2 id="detailTitle">选择一个任务</h2>
+          <div class="task-desc" id="detailDesc">点击左侧任务后，这里显示任务目标、执行步骤和下一步操作。</div>
+
+          <div class="detail-section">
+            <div class="detail-label">当前进度</div>
+            <ul class="steps" id="detailSteps"></ul>
+          </div>
+
+          <div class="detail-section">
+            <div class="detail-label">备注</div>
+            <div id="detailNote">暂无</div>
+          </div>
+
+          <div class="actions">
+            <button class="secondary" id="markReview">标记待确认</button>
+            <button class="secondary" id="markDone">标记完成</button>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const tasks = [
+      {
+        id: 1,
+        title: "生成本周销售线索跟进计划",
+        desc: "根据 CRM 客户状态，自动整理今日优先联系名单。",
+        status: "running",
+        priority: "high",
+        owner: "林可",
+        agent: "销售助理 Agent",
+        created: "今天 08:30",
+        updated: "10:42",
+        note: "需要在输出前检查客户重复记录。",
+        steps: [
+          ["读取客户列表", "完成"],
+          ["识别高意向客户", "进行中"],
+          ["生成跟进建议", "等待中"]
+        ]
+      },
+      {
+        id: 2,
+        title: "审核 AI 生成的客服回复模板",
+        desc: "人工确认高频问题的自动回复是否符合品牌语气。",
+        status: "review",
+        priority: "medium",
+        owner: "周敏",
+        agent: "客服 Agent",
+        created: "今天 09:00",
+        updated: "09:18",
+        note: "重点检查退款、投诉相关回复。",
+        steps: [
+          ["生成模板", "完成"],
+          ["敏感词检查", "完成"],
+          ["人工确认", "待处理"]
+        ]
+      },
+      {
+        id: 3,
+        title: "整理竞品更新摘要",
+        desc: "抓取竞品公开页面，生成产品变化摘要。",
+        status: "done",
+        priority: "low",
+        owner: "陈岚",
+        agent: "研究 Agent",
+        created: "昨天 16:20",
+        updated: "昨天 18:05",
+        note: "已发送到产品群。",
+        steps: [
+          ["采集页面", "完成"],
+          ["提取变化", "完成"],
+          ["生成摘要", "完成"]
+        ]
+      },
+      {
+        id: 4,
+        title: "同步订单异常数据",
+        desc: "检测订单系统中的失败任务并生成修复建议。",
+        status: "error",
+        priority: "high",
+        owner: "王越",
+        agent: "运营 Agent",
+        created: "今天 08:10",
+        updated: "08:31",
+        note: "接口返回超时，需要技术同事确认。",
+        steps: [
+          ["连接订单系统", "失败"],
+          ["读取异常订单", "未开始"],
+          ["生成修复建议", "未开始"]
+        ]
+      }
+    ];
+
+    const statusMap = {
+      running: ["进行中", "status-running"],
+      review: ["待确认", "status-review"],
+      done: ["已完成", "status-done"],
+      error: ["异常", "status-error"]
+    };
+
+    const priorityMap = {
+      high: ["高", "priority-high"],
+      medium: ["中", "priority-medium"],
+      low: ["低", "priority-low"]
+    };
+
+    const taskBody = document.getElementById("taskBody");
+    const emptyState = document.getElementById("emptyState");
+    const searchInput = document.getElementById("searchInput");
+    const statusFilter = document.getElementById("statusFilter");
+    const priorityFilter = document.getElementById("priorityFilter");
+    let selectedTask = tasks[0];
+
+    function renderMetrics() {
+      document.getElementById("runningCount").textContent = tasks.filter(task => task.status === "running").length;
+      document.getElementById("reviewCount").textContent = tasks.filter(task => task.status === "review").length;
+      document.getElementById("doneCount").textContent = tasks.filter(task => task.status === "done").length;
+      document.getElementById("errorCount").textContent = tasks.filter(task => task.status === "error").length;
+    }
+
+    function getFilteredTasks() {
+      const keyword = searchInput.value.trim().toLowerCase();
+      const status = statusFilter.value;
+      const priority = priorityFilter.value;
+
+      return tasks.filter(task => {
+        const matchesKeyword = [task.title, task.owner, task.agent].join(" ").toLowerCase().includes(keyword);
+        const matchesStatus = status === "all" || task.status === status;
+        const matchesPriority = priority === "all" || task.priority === priority;
+        return matchesKeyword && matchesStatus && matchesPriority;
+      });
+    }
+
+    function renderTable() {
+      const rows = getFilteredTasks();
+      taskBody.innerHTML = "";
+      emptyState.style.display = rows.length ? "none" : "block";
+
+      rows.forEach(task => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>
+            <div class="task-title">${task.title}</div>
+            <div class="task-desc">${task.desc}</div>
+          </td>
+          <td><span class="badge ${statusMap[task.status][1]}">${statusMap[task.status][0]}</span></td>
+          <td><span class="${priorityMap[task.priority][1]}">${priorityMap[task.priority][0]}</span></td>
+          <td>${task.owner}</td>
+          <td>${task.agent}</td>
+          <td>${task.created}</td>
+          <td>${task.updated}</td>
+          <td>
+            <div class="row-actions">
+              <button class="text-button" data-action="view">查看</button>
+              <button class="text-button" data-action="edit">编辑</button>
+              <button class="text-button" data-action="${task.status === "error" ? "retry" : "archive"}">${task.status === "error" ? "重试" : "归档"}</button>
+            </div>
+          </td>
+        `;
+        tr.addEventListener("click", () => {
+          selectedTask = task;
+          renderDetail();
+        });
+        tr.querySelectorAll(".text-button").forEach(button => {
+          button.addEventListener("click", event => {
+            event.stopPropagation();
+            selectedTask = task;
+            renderDetail();
+            handleRowAction(button.dataset.action, task);
+          });
+        });
+        taskBody.appendChild(tr);
+      });
+    }
+
+    function renderDetail() {
+      document.getElementById("detailTitle").textContent = selectedTask.title;
+      document.getElementById("detailDesc").textContent = selectedTask.desc;
+      document.getElementById("detailNote").textContent = selectedTask.note;
+      document.getElementById("detailSteps").innerHTML = selectedTask.steps
+        .map(step => `<li><span>${step[0]}</span><strong>${step[1]}</strong></li>`)
+        .join("");
+    }
+
+    function updateSelectedStatus(status) {
+      if (!selectedTask) return;
+      selectedTask.status = status;
+      selectedTask.updated = "刚刚";
+      renderMetrics();
+      renderTable();
+      renderDetail();
+    }
+
+    function handleRowAction(action, task) {
+      const actionText = {
+        view: "查看任务详情",
+        edit: "编辑任务",
+        retry: "重试异常任务",
+        archive: "归档任务"
+      };
+      alert(`演示功能：${actionText[action]}「${task.title}」未来会调用后端接口。`);
+    }
+
+    document.getElementById("createTask").addEventListener("click", () => {
+      alert("演示功能：这里未来会打开新建任务表单。");
+    });
+
+    document.getElementById("markReview").addEventListener("click", () => updateSelectedStatus("review"));
+    document.getElementById("markDone").addEventListener("click", () => updateSelectedStatus("done"));
+    searchInput.addEventListener("input", renderTable);
+    statusFilter.addEventListener("change", renderTable);
+    priorityFilter.addEventListener("change", renderTable);
+
+    renderMetrics();
+    renderTable();
+    renderDetail();
+  </script>
+</body>
+</html>
+
